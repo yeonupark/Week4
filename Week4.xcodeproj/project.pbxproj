@@ -21,6 +21,7 @@
 		4837D2EB2A809C5600C925DB /* APIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4837D2EA2A809C5600C925DB /* APIKey.swift */; };
 		487A833A2A81C50200953B88 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487A83392A81C50200953B88 /* WeatherViewController.swift */; };
 		487A833C2A81E79000953B88 /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 487A833B2A81E79000953B88 /* VideoViewController.swift */; };
+		48CDD80A2A83230E00813D6A /* VideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48CDD8092A83230E00813D6A /* VideoTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		4837D2EA2A809C5600C925DB /* APIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKey.swift; sourceTree = "<group>"; };
 		487A83392A81C50200953B88 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		487A833B2A81E79000953B88 /* VideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = SOURCE_ROOT; };
+		48CDD8092A83230E00813D6A /* VideoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 		4837D2C82A80968100C925DB /* Week4 */ = {
 			isa = PBXGroup;
 			children = (
+				48CDD8092A83230E00813D6A /* VideoTableViewCell.swift */,
 				487A833B2A81E79000953B88 /* VideoViewController.swift */,
 				4837D2C92A80968100C925DB /* AppDelegate.swift */,
 				4837D2CB2A80968100C925DB /* SceneDelegate.swift */,
@@ -175,6 +178,7 @@
 				487A833A2A81C50200953B88 /* WeatherViewController.swift in Sources */,
 				4837D2CE2A80968100C925DB /* ViewController.swift in Sources */,
 				4837D2CA2A80968100C925DB /* AppDelegate.swift in Sources */,
+				48CDD80A2A83230E00813D6A /* VideoTableViewCell.swift in Sources */,
 				4837D2CC2A80968100C925DB /* SceneDelegate.swift in Sources */,
 				4837D2EB2A809C5600C925DB /* APIKey.swift in Sources */,
 			);
