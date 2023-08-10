@@ -18,6 +18,8 @@ struct Movie {
 class ViewController: UIViewController {
 
     @IBOutlet var movieTableView: UITableView!
+    @IBOutlet var activityIndicatorView: UIActivityIndicatorView!
+    @IBOutlet var searchBar: UISearchBar!
     
     var movieList: [Movie] = []
     //var rankList: [String] = []
@@ -27,34 +29,35 @@ class ViewController: UIViewController {
         
         movieTableView.delegate = self
         movieTableView.dataSource = self
+        searchBar.delegate = self
         
         movieTableView.rowHeight = 60
+        activityIndicatorView.isHidden = true
         
-        callRequest()
     }
 
-    func callRequest() {
-        let url = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=\(APIKey.boxOffieKey)&targetDt=20120101"
+    func callRequest(date: String) {
+        
+        activityIndicatorView.startAnimating()
+        activityIndicatorView.isHidden = false
+        
+        
+        let url = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=\(APIKey.boxOffieKey)&targetDt=\(date)"
         AF.request(url, method: .get).validate().responseJSON { response in
             switch response.result {
             case .success(let value):
                 let json = JSON(value)
                 print("JSON: \(json)")
                 
-                // 복잡한 json 구조. 데이터를 원하는 형태에 맞게끔 차근차근 가져오는 것 필요. 한칸 한칸 들어가는 과정
-//                let name1 = json["boxOfficeResult"]["dailyBoxOfficeList"][0]["movieNm"].stringValue
-//                let name2 = json["boxOfficeResult"]["dailyBoxOfficeList"][1]["movieNm"].stringValue
-//                let name3 = json["boxOfficeResult"]["dailyBoxOfficeList"][2]["movieNm"].stringValue
-//                self.movieList.append(contentsOf: [name1,name2,name3])
-                
                 for item in json["boxOfficeResult"]["dailyBoxOfficeList"].arrayValue {
                     let movieNm = item["movieNm"].stringValue
-                    let ranking = item["rankOldAndNew"].stringValue
+                    let ranking = item["rank"].stringValue
                     let data = Movie(title: movieNm, rnum: ranking)
                     self.movieList.append(data)
                 }
                 
-                
+                self.activityIndicatorView.stopAnimating()
+                self.activityIndicatorView.isHidden = true
                 self.movieTableView.reloadData()
                 
             case .failure(let error):
@@ -63,7 +66,13 @@ class ViewController: UIViewController {
         }
     }
     
-    
+}
+extension ViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        // 20220101 > 1. 8글자인지 2. 올바른 날짜 형식에 맞는 숫자인지 3. 날짜의 범위가 올바른지 (어제날짜 까지
+        callRequest(date: searchBar.text!)
+    }
 }
 
 extension ViewController: UITableViewDelegate, UITableViewDataSource {

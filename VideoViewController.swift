@@ -43,7 +43,7 @@ class VideoViewController: UIViewController {
         searchBar.delegate = self
         
     }
-    
+
     func callRequest(query: String, page: Int) {
         
         let text = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!

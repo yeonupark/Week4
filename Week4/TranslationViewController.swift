@@ -8,11 +8,14 @@
 import UIKit
 
 class TranslationViewController: UIViewController {
-
+    
+    @IBOutlet var originalTextView: UITextView!
+    @IBOutlet var requestButton: UIButton!
+    @IBOutlet var translateTextView: UITextView!
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        
     }
     
 
