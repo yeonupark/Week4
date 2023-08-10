@@ -14,6 +14,7 @@ class PaPagoViewController: UIViewController {
     @IBOutlet var originalTextView: UITextView!
     @IBOutlet var requestButton: UIButton!
     @IBOutlet var translateTextView: UITextView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,24 +24,24 @@ class PaPagoViewController: UIViewController {
     }
     
     @IBAction func requestButtonClicked(_ sender: UIButton) {
-        callRequest()
+        detectLanguage()
     }
     
-    func callRequest() {
+    func callRequest(_ originLang: String) {
         
         let url = "https://openapi.naver.com/v1/papago/n2mt"
         let header: HTTPHeaders = [
-            "X-Naver-Client-Id" : APIKey.naverId,
-            "X-Naver-Client-Secret" : APIKey.naverKey
+            "X-Naver-Client-Id" : APIKey.naverPapagoId,
+            "X-Naver-Client-Secret" : APIKey.naverPapagoKey
         ]
         let parameters: Parameters = [
-            "source": "ko",
-            "target": "es",
+            "source": originLang,
+            "target": "en",
             "text": originalTextView.text ?? ""
         ]
         
         
-        AF.request(url, method: .post,parameters: parameters ,headers: header).validate().responseJSON { response in
+        AF.request(url, method: .post, parameters: parameters ,headers: header).validate().responseJSON { response in
             switch response.result {
             case .success(let value):
                 let json = JSON(value)
@@ -54,5 +55,31 @@ class PaPagoViewController: UIViewController {
                 print(error)
             }
         }
+    }
+    
+    func detectLanguage() {
+        
+        let url = "https://openapi.naver.com/v1/papago/detectLangs"
+        let header: HTTPHeaders = [
+            "X-Naver-Client-Id" : APIKey.naverDetectId,
+            "X-Naver-Client-Secret" : APIKey.naverDetectKey
+        ]
+        let parameter: Parameters = ["query" : originalTextView.text ?? ""]
+        
+        AF.request(url, method: .post, parameters: parameter, headers: header).validate().responseJSON { response in
+            switch response.result {
+            case .success(let value):
+                
+                let json = JSON(value)
+                //print("JSON: \(json)")
+                let lang = json["langCode"].stringValue
+                
+                self.callRequest(lang)
+                
+            case .failure(let error):
+                print(error)
+            }
+        }
+        
     }
 }
