@@ -15,8 +15,20 @@ class PaPagoViewController: UIViewController {
     @IBOutlet var requestButton: UIButton!
     @IBOutlet var translateTextView: UITextView!
     
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        originalTextView.text = UserDefaultsHelper.standard.nickname
+        UserDefaultsHelper.standard.age = 20
+        
+//        UserDefaults.standard.set("고래밥", forKey: "nickname")
+//        UserDefaults.standard.set(23, forKey: "age")
+//
+//        UserDefaults.standard.string(forKey: "nickname")
+//        UserDefaults.standard.integer(forKey: "age")
+        
         
         requestButton.titleLabel?.text = "번역"
         translateTextView.isEditable = false
@@ -24,7 +36,11 @@ class PaPagoViewController: UIViewController {
     }
     
     @IBAction func requestButtonClicked(_ sender: UIButton) {
-        detectLanguage()
+        //detectLanguage()
+        // 네트워크 통신은 매니저가 처리. 뷰컨트롤러에서는 라이브러리 두개 임포트할 필요 없어짐. 뷰컨은 하나의 역할만 담당하게 됨
+        TranslateAPIManager.shared.callRequest(text: originalTextView.text!) { result in
+            self.translateTextView.text = result
+        }
     }
     
     func callRequest(_ originLang: String) {
@@ -49,7 +65,6 @@ class PaPagoViewController: UIViewController {
                 
                 let result = json["message"]["result"]["translatedText"].stringValue
                 self.translateTextView.text = result
-                
                 
             case .failure(let error):
                 print(error)

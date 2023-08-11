@@ -45,51 +45,50 @@ class VideoViewController: UIViewController {
     }
 
     func callRequest(query: String, page: Int) {
-        
-        let text = query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
-        let url = "https://dapi.kakao.com/v2/search/vclip?query=\(text)&size=10&page=\(page)"
-        let header: HTTPHeaders = ["Authorization":"KakaoAK ed611cdb23909b15d68b0011e02b41a5"]
-        
-        AF.request(url, method: .get, headers: header).validate(statusCode: 200...500).responseJSON { response in
-            switch response.result {
-            case .success(let value):
-                
-                let json = JSON(value)
-                //print("JSON: \(json)")
-                print(url)
-                
-                // statusCode는 optional이기 때문에 처리해주자. 500이 보편적 에러임
-                let statusCode = response.response?.statusCode ?? 500
-                
-                if statusCode == 200 {
-                    
-                    self.isEnd = json["meta"]["is_end"].boolValue // 마지막 페이지인 순간에 true가 될 것
-                    print(self.isEnd)
-                    
-                    for item in json["documents"].arrayValue {
-                        
-                        let title = item["title"].stringValue
-                        let author = item["author"].stringValue
-                        let date = item["datetime"].stringValue
-                        let time = item["play_time"].intValue
-                        let thumbnail = item["thumbnail"].stringValue
-                        let link = item["url"].stringValue
-                        
-                        let data = Video(author: author, date: date, time: time, thumbNail: thumbnail, title: title, url: link)
-                        self.videoList.append(data)
-                        
-                        //print(self.videoList)
-                        self.tableView.reloadData()
-                    }
-
-                } else {
-                    print("문제가 발생했습니다. 잠시 후 다시 시도해주세요!")
-                }
-                        
-            case .failure(let error):
-                print(error)
-            }
+        KakaoAPIManager.shared.callRequest(type: .video, query: query) { json in
+            print(json)
         }
+        
+//        AF.request(url, method: .get, headers: header).validate(statusCode: 200...500).responseJSON { response in
+//            switch response.result {
+//            case .success(let value):
+//
+//                let json = JSON(value)
+//                //print("JSON: \(json)")
+//                print(url)
+//
+//                // statusCode는 optional이기 때문에 처리해주자. 500이 보편적 에러임
+//                let statusCode = response.response?.statusCode ?? 500
+//
+//                if statusCode == 200 {
+//
+//                    self.isEnd = json["meta"]["is_end"].boolValue // 마지막 페이지인 순간에 true가 될 것
+//                    print(self.isEnd)
+//
+//                    for item in json["documents"].arrayValue {
+//
+//                        let title = item["title"].stringValue
+//                        let author = item["author"].stringValue
+//                        let date = item["datetime"].stringValue
+//                        let time = item["play_time"].intValue
+//                        let thumbnail = item["thumbnail"].stringValue
+//                        let link = item["url"].stringValue
+//
+//                        let data = Video(author: author, date: date, time: time, thumbNail: thumbnail, title: title, url: link)
+//                        self.videoList.append(data)
+//
+//                        //print(self.videoList)
+//                        self.tableView.reloadData()
+//                    }
+//
+//                } else {
+//                    print("문제가 발생했습니다. 잠시 후 다시 시도해주세요!")
+//                }
+//
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
     }
     
 }
@@ -117,7 +116,7 @@ extension VideoViewController: UITableViewDelegate, UITableViewDataSource, UITab
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "VideoTableViewCell") as? VideoTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: VideoTableViewCell.identifier) as? VideoTableViewCell else {
             return UITableViewCell()
         }
         
