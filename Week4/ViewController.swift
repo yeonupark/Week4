@@ -15,6 +15,37 @@ struct Movie {
     var rnum: String
 }
 
+// MARK: - Welcome
+struct BoxOffice: Codable {
+    let boxOfficeResult: BoxOfficeResult
+}
+
+// MARK: - BoxOfficeResult
+struct BoxOfficeResult: Codable {
+    let boxofficeType, showRange: String
+    let dailyBoxOfficeList: [DailyBoxOfficeList]
+}
+
+// MARK: - DailyBoxOfficeList
+struct DailyBoxOfficeList: Codable {
+    let rnum, rank, rankInten: String
+    let rankOldAndNew: RankOldAndNew
+    let movieCD, movieNm, openDt, salesAmt: String
+    let salesShare, salesInten, salesChange, salesAcc: String
+    let audiCnt, audiInten, audiChange, audiAcc: String
+    let scrnCnt, showCnt: String
+
+    enum CodingKeys: String, CodingKey {
+        case rnum, rank, rankInten, rankOldAndNew
+        case movieCD = "movieCd"
+        case movieNm, openDt, salesAmt, salesShare, salesInten, salesChange, salesAcc, audiCnt, audiInten, audiChange, audiAcc, scrnCnt, showCnt
+    }
+}
+
+enum RankOldAndNew: String, Codable {
+    case old = "OLD"
+}
+
 class ViewController: UIViewController {
 
     @IBOutlet var movieTableView: UITableView!
@@ -22,7 +53,10 @@ class ViewController: UIViewController {
     @IBOutlet var searchBar: UISearchBar!
     
     var movieList: [Movie] = []
-    //var rankList: [String] = []
+    
+    //codable로 수정
+    var result: BoxOffice?
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,27 +77,36 @@ class ViewController: UIViewController {
         
         
         let url = "http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key=\(APIKey.boxOffieKey)&targetDt=\(date)"
-        AF.request(url, method: .get).validate().responseJSON { response in
-            switch response.result {
-            case .success(let value):
-                let json = JSON(value)
-                print("JSON: \(json)")
-                
-                for item in json["boxOfficeResult"]["dailyBoxOfficeList"].arrayValue {
-                    let movieNm = item["movieNm"].stringValue
-                    let ranking = item["rank"].stringValue
-                    let data = Movie(title: movieNm, rnum: ranking)
-                    self.movieList.append(data)
-                }
-                
-                self.activityIndicatorView.stopAnimating()
-                self.activityIndicatorView.isHidden = true
-                self.movieTableView.reloadData()
-                
-            case .failure(let error):
-                print(error)
+        
+        AF.request(url, method: .get).validate()
+            .responseDecodable(of: BoxOffice.self) { response in
+                print(response.value) // 구조체에 담겨서 내용이 출력됨
+                self.result = response.value // 배열 만들어서 반복문 + append 하지 않아도 된다.
             }
-        }
+        
+        
+            
+//            .responseJSON { response in
+//            switch response.result {
+//            case .success(let value):
+//                let json = JSON(value)
+//                print("JSON: \(json)")
+//
+//                for item in json["boxOfficeResult"]["dailyBoxOfficeList"].arrayValue {
+//                    let movieNm = item["movieNm"].stringValue
+//                    let ranking = item["rank"].stringValue
+//                    let data = Movie(title: movieNm, rnum: ranking)
+//                    self.movieList.append(data)
+//                }
+//
+//                self.activityIndicatorView.stopAnimating()
+//                self.activityIndicatorView.isHidden = true
+//                self.movieTableView.reloadData()
+//
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
     }
     
 }
@@ -78,7 +121,7 @@ extension ViewController: UISearchBarDelegate {
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movieList.count
+        return result!.boxOfficeResult.dailyBoxOfficeList.count //movieList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
